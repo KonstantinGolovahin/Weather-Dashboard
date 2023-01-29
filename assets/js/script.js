@@ -16,9 +16,20 @@ let queryCityURL ="http://api.openweathermap.org/geo/1.0/direct?limit=1&"
 // create query parameters (generate URL with parameters below)
 //API key as it is
 let queryParams = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
-// city (equivalent to &q=CityName)
+// city to search for
 queryParams.q ;
 //console.log("enot"+enot1 + $.param(queryParams));
+
+
+
+
+// new array for values from a local storage
+let taskSaved = [];
+taskSaved = getTasks(taskSaved);
+
+
+
+
 
 // idea from https://stackoverflow.com/questions/17216438/chain-multiple-then-in-jquery-when
  function request(){
@@ -133,6 +144,34 @@ taskHumidity.className = 'taskText';
 });
  } 
 
+
+
+
+
+
+// retrieve saved values from local storage if any exists
+function getTasks(arr) {
+  if (localStorage.getItem("taskObject") === null) {
+      arr = [];
+
+  } else {
+      arr = JSON.parse(localStorage.getItem("taskObject"));
+
+  }
+  return arr;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 // start search button
 $('.search-button').on('click', function (e) {
   e.preventDefault();
@@ -144,8 +183,25 @@ $('.search-button').on('click', function (e) {
     alert("Please enter city name")
   }
   else{
-    //console.log(queryParams.q)
+
+
+    // get updated list of tasks from storage 
+    taskObject = getTasks(taskSaved);
+    let userSave = {
+     // order: "1",
+      city: queryParams.q,
+
+  }
+// add new value to array
+  taskObject.push(userSave);
+ // save to local storage
+            localStorage.setItem("taskObject", JSON.stringify(taskObject));
+  // execute request for current city
     request()
+   
   }
 
 });
+
+
+getTasks(taskSaved)
