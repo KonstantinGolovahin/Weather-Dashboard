@@ -8,6 +8,8 @@ let queryParams1 = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
 queryParams1.lat;
 queryParams1.lon;
 
+// amount of timestamps received. Fixed value at this point
+let queryCnt = 40;
 
 
 let queryCityURL ="http://api.openweathermap.org/geo/1.0/direct?limit=1&"
@@ -83,5 +85,71 @@ $.ajax({
     var iconurl = "http://openweathermap.org/img/wn/" + iconcode + ".png";
     //var iconurl = "http://openweathermap.org/img/wn/10d@2x.png"
     $('#wicon').attr('src', iconurl);
+
+
+// next 5 days
+// loop for data after each 8 timestamps - 1 day (max=40 by API). 
+for (i=7;i<queryCnt;i=i+8) {
+  let iconcodeTemp = response1.list[i].weather[0].icon;
+  let tempTemp= response1.list[i].main.temp
+  let windTemp= response1.list[i].wind.speed
+  let humidityTemp= response1.list[i].main.humidity
+  console.log(response1.list[i].dt_txt + tempTemp +windTemp+  humidityTemp)
+
+
+// dynamically create a set of bootstrap cards for a list of array elements
+let cardContainer;
+cardContainer = document.getElementById('forecast');
+
+    //card itself
+    let card = document.createElement('div');
+    card.className = 'card ';
+    // card body
+    let cardBody = document.createElement('div');
+    cardBody.className = 'card-body';
+    // Date
+    let taskDate = document.createElement('p');
+    taskDate.innerText = moment(response1.list[i].dt_txt).format("DD/MM/YYYY");
+    taskDate.className = 'taskDate';
+    // Icon
+    let taskImg = document.createElement('img');
+    let taskURL =  "http://openweathermap.org/img/wn/" + iconcodeTemp + ".png";
+    $(taskImg).attr('src', taskURL);
+    taskImg.className = 'taskIMG';
+
+// Temperature
+let taskTemperature = document.createElement('p');
+taskTemperature.innerText = tempTemp;
+taskTemperature.className = 'taskText';
+
+// Wind
+let taskWind = document.createElement('p');
+taskWind.innerText = windTemp;
+taskWind.className = 'taskText';
+
+// Humidity
+let taskHumidity = document.createElement('p');
+taskHumidity.innerText = humidityTemp;
+taskHumidity.className = 'taskText';
+
+    // save button
+    //let taskButton = document.createElement('button');
+    //taskButton.innerText = "Save";
+    //taskButton.className = 'col-1  taskButton';
+
+    // set card body element order
+    cardBody.appendChild(taskDate);
+    cardBody.appendChild(taskImg);
+    cardBody.appendChild(taskTemperature);
+    cardBody.appendChild(taskWind);
+    cardBody.appendChild(taskHumidity);
+   
+    // set a card body inside a card
+    card.appendChild(cardBody);
+    cardContainer.appendChild(card);
+  
+} 
+
+
 
 });
