@@ -5,8 +5,8 @@ let queryURL = "https://api.openweathermap.org/data/2.5/weather?q=Daugavpils,Lat
 //let queryWeatherURL = "api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}"
 let queryWeatherURL = "https://api.openweathermap.org/data/2.5/forecast?units=metric&"
 let queryParams1 = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
-queryParams1.lat;
-queryParams1.lon;
+ queryParams1.lat ;
+ queryParams1.lon ;
 
 // amount of timestamps received. Fixed value at this point
 let queryCnt = 40;
@@ -17,34 +17,12 @@ let queryCityURL ="http://api.openweathermap.org/geo/1.0/direct?limit=1&"
 //API key as it is
 let queryParams = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
 // city (equivalent to &q=CityName)
-queryParams.q = "Daugavpils"
+queryParams.q ;
 //console.log("enot"+enot1 + $.param(queryParams));
 
-
-/* 
-$.ajax({
-    
-    url: queryCityURL+$.param(queryParams),
-    method: "GET"
-    // this required to return city coordinates before next APi call
-    //async:false
-  }).then(function(response) {
-   // console.log(response)
-   // console.log(response[0].name)
-   // console.log(response[0].lat)
-   // console.log(response[0].lon)
-    
-
-
-
-
-   
-  
-  });
- */
-
 // idea from https://stackoverflow.com/questions/17216438/chain-multiple-then-in-jquery-when
- let request= $.ajax({
+ function request(){
+  $.ajax({
     url: queryCityURL+$.param(queryParams),
     method: "GET"
     
@@ -119,17 +97,17 @@ cardContainer = document.getElementById('forecast');
 
 // Temperature
 let taskTemperature = document.createElement('p');
-taskTemperature.innerText = tempTemp;
+taskTemperature.innerText = "Temperature: "+tempTemp+ " ℃";
 taskTemperature.className = 'taskText';
 
 // Wind
 let taskWind = document.createElement('p');
-taskWind.innerText = windTemp;
+taskWind.innerText = "Wind: "+windTemp+ " KPH";
 taskWind.className = 'taskText';
 
 // Humidity
 let taskHumidity = document.createElement('p');
-taskHumidity.innerText = humidityTemp;
+taskHumidity.innerText = "Humidity: "+humidityTemp+ " %";
 taskHumidity.className = 'taskText';
 
     // save button
@@ -151,5 +129,23 @@ taskHumidity.className = 'taskText';
 } 
 
 
+
+});
+ } 
+
+// start search button
+$('.search-button').on('click', function (e) {
+  e.preventDefault();
+  // no need for other checks as there is a default London value
+  queryParams.q = $("#search-input")
+  .val()
+  .trim();
+  if (queryParams.q===""){
+    alert("Please enter city name")
+  }
+  else{
+    //console.log(queryParams.q)
+    request()
+  }
 
 });
