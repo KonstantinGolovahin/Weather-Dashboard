@@ -12,7 +12,7 @@ queryCoordParams.lon;
 let queryCnt = 40;
 
 // get city coordinates by name
-let queryCityURL = "http://api.openweathermap.org/geo/1.0/direct?limit=1&"
+let queryCityURL = "https://api.openweathermap.org/geo/1.0/direct?limit=1&"
 // create query parameters (generate URL with parameters below)
 //API key as it is
 let queryCityParams = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
