@@ -1,105 +1,97 @@
 // API key, can't be really hidden on Github pages
-let keyAPI = "652bfd44571ae6c9a278b53d5d538b0d"
+//let keyAPI = "652bfd44571ae6c9a278b53d5d538b0d"
 //openweathermap URL
-let queryURL = "https://api.openweathermap.org/data/2.5/weather?q=Daugavpils,Latvia&appid=" + keyAPI;
+//let queryURL = "https://api.openweathermap.org/data/2.5/weather?q=Daugavpils,Latvia&appid=" + keyAPI;
 //let queryWeatherURL = "api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}"
 let queryWeatherURL = "https://api.openweathermap.org/data/2.5/forecast?units=metric&"
-let queryParams1 = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
-queryParams1.lat;
-queryParams1.lon;
+let queryCoordParams = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
+queryCoordParams.lat;
+queryCoordParams.lon;
 
 // amount of timestamps received. Fixed value at this point
 let queryCnt = 40;
 
-
+// get city coordinates by name
 let queryCityURL = "http://api.openweathermap.org/geo/1.0/direct?limit=1&"
 // create query parameters (generate URL with parameters below)
 //API key as it is
-let queryParams = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
+let queryCityParams = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
 // city to search for
-queryParams.q;
-//console.log("enot"+enot1 + $.param(queryParams));
-
-
-
+queryCityParams.q;
 
 // new array for values from a local storage
 let taskSaved = [];
 taskSaved = getTasks(taskSaved);
 
+// check if API accepts city name
+let checkCity = true;
 
-
-
+////////////////// functions /////////////
 
 // idea from https://stackoverflow.com/questions/17216438/chain-multiple-then-in-jquery-when
 function request() {
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // first request to get city coordinates for the second query
   $.ajax({
-    url: queryCityURL + $.param(queryParams),
+    url: queryCityURL + $.param(queryCityParams),
     method: "GET"
 
+    // after receiving details
+  }).then(function (responseCity) {
 
-  }).then(function (response) {
+    // in case ther is no city, search for London, warn user
+    if (responseCity.length === 0) {
 
-    // console.log(response[0].name)
-    /// console.log(response[0].lat)
-    // console.log(response[0].lon)
+      checkCity = false;
+      
+      queryCoordParams.lat = 56.9494;
+      queryCoordParams.lon = 24.1052;
+      alert("Incorrect city. Please check spelling and try again. Data for London will be displayed")
+    }
 
-    queryParams1.lat = response[0].lat;
-    queryParams1.lon = response[0].lon;
+    else {
+
+      queryCoordParams.lat = responseCity[0].lat;
+      queryCoordParams.lon = responseCity[0].lon;
+    }
+
+    // second request to receive required data
     return $.ajax({
 
-      url: queryWeatherURL + $.param(queryParams1),
+      url: queryWeatherURL + $.param(queryCoordParams),
       method: "GET"
 
     });
 
+    // after all data received
+  }).then(function (responseCoord) {
 
-  }).then(function (response1) {
 
-    //return $.ajax({...});
-    console.log(response1)
-    // console.log(response1.list[0].weather[0].icon)
+    // One loop for today and next 5 days does not seem a correct decision as result can't be split in exactly 6 parts
 
     // generate data for the closest timestamp
-    let iconcode = response1.list[0].weather[0].icon;
-    let tempToday = response1.list[0].main.temp
-    let windToday = response1.list[0].wind.speed
-    let humidityToday = response1.list[0].main.humidity
+    let iconcode = responseCoord.list[0].weather[0].icon;
+    let tempToday = responseCoord.list[0].main.temp
+    let windToday = responseCoord.list[0].wind.speed
+    let humidityToday = responseCoord.list[0].main.humidity
     // display data for for the closest timestamp
-    //console.log(tempToday)
-    $('#icon-weather-today').text(queryParams.q + " (" + moment().format("DD/MM/YYYY") + ") ");
+
+    $('#icon-weather-today').text(queryCityParams.q + " (" + moment().format("DD/MM/YYYY") + ") ");
     $('#temp-today').text("Temperature: " + tempToday + " ℃");
     $('#wind-today').text("Wind: " + windToday + " KPH");
     $('#humidity-today').text("Humidity: " + humidityToday + " %");
-    var iconurl = "http://openweathermap.org/img/wn/" + iconcode + ".png";
-    //var iconurl = "http://openweathermap.org/img/wn/10d@2x.png"
+    let iconurl = "http://openweathermap.org/img/wn/" + iconcode + ".png";
     $('#wicon').attr('src', iconurl);
 
     // clear prevoius
-$("#forecast").empty()
+    $("#forecast").empty()
     // next 5 days
-    // loop for data after each 8 timestamps - 1 day (max=40 by API). 
+    // loop for data after each 8 timestamps = 1 day (max=40 by API). 
     for (i = 7; i < queryCnt; i = i + 8) {
-      let iconcodeTemp = response1.list[i].weather[0].icon;
-      let tempTemp = response1.list[i].main.temp
-      let windTemp = response1.list[i].wind.speed
-      let humidityTemp = response1.list[i].main.humidity
-      console.log(response1.list[i].dt_txt + tempTemp + windTemp + humidityTemp)
-
-
+      let iconcodeTemp = responseCoord.list[i].weather[0].icon;
+      let tempTemp = responseCoord.list[i].main.temp
+      let windTemp = responseCoord.list[i].wind.speed
+      let humidityTemp = responseCoord.list[i].main.humidity
+      
       // dynamically create a set of bootstrap cards for a list of array elements
       let cardContainer;
       cardContainer = document.getElementById('forecast');
@@ -112,7 +104,7 @@ $("#forecast").empty()
       cardBody.className = 'card-body';
       // Date
       let taskDate = document.createElement('p');
-      taskDate.innerText = moment(response1.list[i].dt_txt).format("DD/MM/YYYY");
+      taskDate.innerText = moment(responseCoord.list[i].dt_txt).format("DD/MM/YYYY");
       taskDate.className = 'taskDate';
       // Icon
       let taskImg = document.createElement('img');
@@ -135,11 +127,6 @@ $("#forecast").empty()
       taskHumidity.innerText = "Humidity: " + humidityTemp + " %";
       taskHumidity.className = 'taskText';
 
-      // save button
-      //let taskButton = document.createElement('button');
-      //taskButton.innerText = "Save";
-      //taskButton.className = 'col-1  taskButton';
-
       // set card body element order
       cardBody.appendChild(taskDate);
       cardBody.appendChild(taskImg);
@@ -153,76 +140,19 @@ $("#forecast").empty()
 
     }
 
-
-
   });
 }
-
-
-
-
 
 
 // retrieve saved values from local storage if any exists
 function getTasks(arr) {
   if (localStorage.getItem("taskObject") === null) {
     arr = [];
-
   } else {
     arr = JSON.parse(localStorage.getItem("taskObject"));
-
   }
   return arr;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-// start search button
-$('.search-button').on('click', function (e) {
-  e.preventDefault();
-  // no need for other checks as there is a default London value
-  queryParams.q = $("#search-input")
-    .val()
-    .trim();
-  if (queryParams.q === "") {
-    alert("Please enter city name")
-  }
-  else {
-
-
-    // get updated list of tasks from storage 
-    taskObject = getTasks(taskSaved);
-    let userSave = {
-      // order: "1",
-      city: queryParams.q,
-
-    }
-    // add new value to array
-    taskObject.push(userSave);
-    // save to local storage
-    localStorage.setItem("taskObject", JSON.stringify(taskObject));
-// add this city to search history
-taskSaved=taskObject;
-renderButtons()
-
-    // execute request for current city
-    request()
-    
-    
-
-  }
-
-});
-
 
 // render buttons for history
 function renderButtons() {
@@ -230,47 +160,73 @@ function renderButtons() {
   // clear prevoius entries
   $("#history").empty()
   getTasks(taskSaved)
-  console.log(taskSaved +"Step2")
+
   if (taskSaved.length > 0) {
     for (i = 0; i < taskSaved.length; i++) {
-
-      // save button
+      // add button for each city
       let taskButton = document.createElement('button');
       taskButton.innerText = taskSaved[i].city;
       taskButton.className = 'taskButton';
       document.getElementById('history').appendChild(taskButton);
-      
     }
   }
 
-// clear history button
-let clearHistoryButton = document.createElement('button');
-clearHistoryButton.innerText = "Clear history";
-clearHistoryButton.className = 'clearHistoryButton';
-document.getElementById('history').appendChild(clearHistoryButton);
-
+  // create clear history button
+  let clearHistoryButton = document.createElement('button');
+  clearHistoryButton.innerText = "Clear history";
+  clearHistoryButton.className = 'clearHistoryButton';
+  document.getElementById('history').appendChild(clearHistoryButton);
 
 }
 
+
+//////////////////// buttons ////////////////
+// start search button
+$('.search-button').on('click', function (e) {
+  e.preventDefault();
+  // get user input
+  queryCityParams.q = $("#search-input")
+    .val()
+    .trim();
+  if (queryCityParams.q === "") {
+    alert("Please enter city name")
+  }
+  
+  else {
+   
+    // get updated list of tasks from storage 
+    taskObject = getTasks(taskSaved);
+    let userSave = {
+   
+      city: queryCityParams.q,
+
+    }
+    // add new value to array
+    taskObject.push(userSave);
+    // save to local storage
+    localStorage.setItem("taskObject", JSON.stringify(taskObject));
+    // add this city to search history
+    taskSaved = taskObject;
+    renderButtons()
+    // execute request for current city
+    request()
+
+  }
+
+});
 
 // call forecast for saved city
 $('#history').on('click', function (e) {
-  
-if($(e.target).text()==="Clear history"){
-  $('#history').empty()
-  localStorage.clear() 
-}
-else{
-  queryParams.q=$(e.target).text();
-  request();
-}
 
-  
+  if ($(e.target).text() === "Clear history") {
+    $('#history').empty()
+    localStorage.clear()
+  }
+  else {
+    queryCityParams.q = $(e.target).text();
+    request();
+  }
 })
 
-
-
-
-
+// start rendering on load
 renderButtons()
-//getTasks(taskSaved)
