@@ -106,7 +106,7 @@ $("#forecast").empty()
 
       //card itself
       let card = document.createElement('div');
-      card.className = 'card ';
+      card.className = 'card card-forecast';
       // card body
       let cardBody = document.createElement('div');
       cardBody.className = 'card-body';
@@ -258,7 +258,7 @@ $('#history').on('click', function (e) {
   
 if($(e.target).text()==="Clear history"){
   $('#history').empty()
-  localStorage.clear()
+  localStorage.clear() 
 }
 else{
   queryParams.q=$(e.target).text();

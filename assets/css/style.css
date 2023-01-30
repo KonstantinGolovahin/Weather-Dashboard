@@ -1,0 +1,70 @@
+.search-button {
+   
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    background-color: #06aed5;
+    color: white;
+    width: 100%;
+  }
+
+  .taskButton {
+    /* border-left: 1px solid black; */
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    background-color: lightgray;
+    color: black;
+    margin-bottom: 5px;
+  }
+
+  .clearHistoryButton {
+    /* border-left: 1px solid black; */
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    background-color: red;
+    color: black;
+  }
+
+/* 5 days forecasr card */
+.card-forecast {
+    background-color: #20505c !important;
+    margin: 10px;
+    align-content: center;
+    color: azure;
+}
+
+/* today's weather */
+.card-today{
+    
+    border: solid;
+    border-color: grey !important;
+    border-width: 1px !important;
+    align-items: center !important;
+    background-color: lightgrey !important;
+
+}
+
+
+#history{
+    width: 50%;
+}
+
+.taskDate {
+    font-size: large;
+    font-weight: bold;
+}
+
+h2{
+    font-weight: bolder;
+    font-size: larger;
+}
+
+.weather-header{
+
+    background-image: linear-gradient(to right, grey, blue);
+}
