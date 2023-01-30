@@ -1,3 +1,14 @@
+h2{
+    font-weight: bolder;
+    font-size: larger;
+}
+
+ /* header gradient*/
+.weather-header{
+
+    background-image: linear-gradient(to right, grey, blue);
+}
+/* buttons */
 .search-button {
    
     border-top-right-radius: 5px;
@@ -10,7 +21,6 @@
   }
 
   .taskButton {
-    /* border-left: 1px solid black; */
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
     border-top-left-radius: 15px;
@@ -49,22 +59,12 @@
 
 }
 
-
-#history{
-    width: 50%;
-}
-
 .taskDate {
     font-size: large;
     font-weight: bold;
 }
 
-h2{
-    font-weight: bolder;
-    font-size: larger;
-}
-
-.weather-header{
-
-    background-image: linear-gradient(to right, grey, blue);
+/* history buttons width */ 
+#history{
+    width: 50%;
 }

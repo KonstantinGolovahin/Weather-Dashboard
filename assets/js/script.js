@@ -1,10 +1,8 @@
 // API key, can't be really hidden on Github pages
-//let keyAPI = "652bfd44571ae6c9a278b53d5d538b0d"
-//openweathermap URL
-//let queryURL = "https://api.openweathermap.org/data/2.5/weather?q=Daugavpils,Latvia&appid=" + keyAPI;
-//let queryWeatherURL = "api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}"
+
 let queryWeatherURL = "https://api.openweathermap.org/data/2.5/forecast?units=metric&"
 let queryCoordParams = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
+// city latitude and longitude
 queryCoordParams.lat;
 queryCoordParams.lon;
 
@@ -18,13 +16,12 @@ let queryCityURL = "https://api.openweathermap.org/geo/1.0/direct?limit=1&"
 let queryCityParams = { "appid": "652bfd44571ae6c9a278b53d5d538b0d" };
 // city to search for
 queryCityParams.q;
+// Replace incorect city name
+let defaultCity = "London";
 
 // new array for values from a local storage
 let taskSaved = [];
 taskSaved = getTasks(taskSaved);
-
-// check if API accepts city name
-let checkCity = true;
 
 ////////////////// functions /////////////
 
@@ -38,14 +35,12 @@ function request() {
     // after receiving details
   }).then(function (responseCity) {
 
-    // in case ther is no city, search for London, warn user
+    // in case there is no city data returned, search for London, warn user
     if (responseCity.length === 0) {
-
-      checkCity = false;
-      
       queryCoordParams.lat = 56.9494;
       queryCoordParams.lon = 24.1052;
       alert("Incorrect city. Please check spelling and try again. Data for London will be displayed")
+      queryCityParams.q = defaultCity;
     }
 
     else {
@@ -64,8 +59,6 @@ function request() {
 
     // after all data received
   }).then(function (responseCoord) {
-
-
     // One loop for today and next 5 days does not seem a correct decision as result can't be split in exactly 6 parts
 
     // generate data for the closest timestamp
@@ -91,58 +84,57 @@ function request() {
       let tempTemp = responseCoord.list[i].main.temp
       let windTemp = responseCoord.list[i].wind.speed
       let humidityTemp = responseCoord.list[i].main.humidity
-      
+
       // dynamically create a set of bootstrap cards for a list of array elements
       let cardContainer;
-      cardContainer = document.getElementById('forecast');
+      cardContainer = $("#forecast");
 
       //card itself
-      let card = document.createElement('div');
-      card.className = 'card card-forecast';
+      let card = $("<div>");
+      $(card).attr("class", "card card-forecast");
       // card body
-      let cardBody = document.createElement('div');
-      cardBody.className = 'card-body';
+      let cardBody = $("<div>");
+      $(cardBody).attr("class","card-body" );
       // Date
-      let taskDate = document.createElement('p');
-      taskDate.innerText = moment(responseCoord.list[i].dt_txt).format("DD/MM/YYYY");
-      taskDate.className = 'taskDate';
+      let taskDate = $("<p>");
+      $(taskDate).text(moment(responseCoord.list[i].dt_txt).format("DD/MM/YYYY"));
+      $(taskDate).attr("class","taskDate");
       // Icon
-      let taskImg = document.createElement('img');
+      let taskImg = $("<img>");
       let taskURL = "http://openweathermap.org/img/wn/" + iconcodeTemp + ".png";
-      $(taskImg).attr('src', taskURL);
-      taskImg.className = 'taskIMG';
+      $(taskImg).attr("src", taskURL);
+      $(taskImg).attr("class","taskIMG");
 
       // Temperature
-      let taskTemperature = document.createElement('p');
-      taskTemperature.innerText = "Temperature: " + tempTemp + " ℃";
-      taskTemperature.className = 'taskText';
+      let taskTemperature = $("<p>");
+      $(taskTemperature).text("Temperature: " + tempTemp + " ℃");
+      $(taskTemperature).attr("class", "taskText");
 
       // Wind
-      let taskWind = document.createElement('p');
-      taskWind.innerText = "Wind: " + windTemp + " KPH";
-      taskWind.className = 'taskText';
+      let taskWind = $("<p>");
+      $(taskWind).text("Wind: " + windTemp + " KPH");
+      $(taskWind).attr("class","taskText");
 
       // Humidity
-      let taskHumidity = document.createElement('p');
-      taskHumidity.innerText = "Humidity: " + humidityTemp + " %";
-      taskHumidity.className = 'taskText';
+      let taskHumidity = $("<p>");
+      $(taskHumidity).text("Humidity: " + humidityTemp + " %");
+      $(taskHumidity).attr("class","taskText");
 
       // set card body element order
-      cardBody.appendChild(taskDate);
-      cardBody.appendChild(taskImg);
-      cardBody.appendChild(taskTemperature);
-      cardBody.appendChild(taskWind);
-      cardBody.appendChild(taskHumidity);
+      $(cardBody).append(taskDate);
+      $(cardBody).append(taskImg);
+      $(cardBody).append(taskTemperature);
+      $(cardBody).append(taskWind);
+      $(cardBody).append(taskHumidity);
 
       // set a card body inside a card
-      card.appendChild(cardBody);
-      cardContainer.appendChild(card);
+      $(card).append(cardBody);
+      $(cardContainer).append(card);
 
     }
 
   });
 }
-
 
 // retrieve saved values from local storage if any exists
 function getTasks(arr) {
@@ -165,24 +157,24 @@ function renderButtons() {
     for (i = 0; i < taskSaved.length; i++) {
       // add button for each city
       let taskButton = document.createElement('button');
-      taskButton.innerText = taskSaved[i].city;
-      taskButton.className = 'taskButton';
-      document.getElementById('history').appendChild(taskButton);
+      $(taskButton).text(taskSaved[i].city);
+      $(taskButton).attr("class","taskButton");
+      $("#history").append(taskButton);
     }
   }
 
   // create clear history button
   let clearHistoryButton = document.createElement('button');
-  clearHistoryButton.innerText = "Clear history";
-  clearHistoryButton.className = 'clearHistoryButton';
-  document.getElementById('history').appendChild(clearHistoryButton);
+  $(clearHistoryButton).text("Clear history");
+  $(clearHistoryButton).attr("class","clearHistoryButton");
+  $("#history").append(clearHistoryButton);
 
 }
 
 
 //////////////////// buttons ////////////////
 // start search button
-$('.search-button').on('click', function (e) {
+$(".search-button").on('click', function (e) {
   e.preventDefault();
   // get user input
   queryCityParams.q = $("#search-input")
@@ -191,13 +183,13 @@ $('.search-button').on('click', function (e) {
   if (queryCityParams.q === "") {
     alert("Please enter city name")
   }
-  
+
   else {
-   
+
     // get updated list of tasks from storage 
     taskObject = getTasks(taskSaved);
     let userSave = {
-   
+
       city: queryCityParams.q,
 
     }
@@ -216,10 +208,10 @@ $('.search-button').on('click', function (e) {
 });
 
 // call forecast for saved city
-$('#history').on('click', function (e) {
+$("#history").on("click", function (e) {
 
   if ($(e.target).text() === "Clear history") {
-    $('#history').empty()
+    $("#history").empty()
     localStorage.clear()
   }
   else {
